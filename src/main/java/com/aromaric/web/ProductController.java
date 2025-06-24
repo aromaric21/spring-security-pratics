@@ -5,6 +5,7 @@ import com.aromaric.repository.ProductRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,6 +26,7 @@ public class ProductController {
     }
 
     @GetMapping("/user/index")
+    @PreAuthorize("hasRole('USER')")
     public String index(Model model){
         List<Product> products = productRepository.findAll();
         model.addAttribute("productList", products);
@@ -37,18 +39,21 @@ public class ProductController {
     }
 
     @PostMapping("/admin/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@RequestParam(name = "id") Long id){
         productRepository.deleteById(id);
         return "redirect:/user/index";
     }
 
     @GetMapping("/admin/newProduct")
+    @PreAuthorize("hasRole('ADMIN')")
     public String newProduct(Model model){
         model.addAttribute("product", new Product());
         return "new-product";
     }
 
     @PostMapping("/admin/saveProduct")
+    @PreAuthorize("hasRole('ADMIN')")
     public String saveProduct(@Valid Product product
             , BindingResult bindingResult
              , Model model){
